@@ -32,9 +32,27 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 // Endpoints da API
-app.MapGet("/api/tarefas", ([FromServices] tarefasContext _db) =>
+app.MapGet("/v1/api/tarefas", ([FromServices] tarefasContext _db) =>
 {
-    return Results.Ok(_db.Tarefa.ToList<Tarefa>());
+    var tarefas = _db.Tarefa.ToList<Tarefa>();
+    return Results.Ok(tarefas);
+});
+
+
+//Busca por ID
+app.MapGet("/api/tarefas/{id}", (
+    [FromServices] tarefasContext _db,
+    [FromRoute] int id
+) =>
+{
+    var tarefa = _db.Tarefa.Find(id);
+
+    if (tarefa == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(tarefa);
 });
 
 app.Run();
